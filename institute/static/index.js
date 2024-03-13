@@ -1,56 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Artworks by Various Artists</title>
-  <link rel="stylesheet" href="../static/index.css">
-  <script src="../static/index.js" defer></script>
-</head>
-<body>
-  <h1>Artworks by Various Artists</h1>
-
-  <div id="container">
-    <div id="artistListContainer">
-      <div id="artistList"></div>
-    </div>
-    <div id="artworkContainer">
-      <div class="arrow left" id="leftArrow" onclick="navigateArtwork(-1)">&#10094;</div>
-      <div id="artworkDisplay"></div>
-      <div class="arrow right" id="rightArrow" onclick="navigateArtwork(1)">&#10095;</div>
-    </div>
-  </div>
-
-  <script>
+javascript
     let currentArtworkIndex = 0;
     let artworks = [];
     let currentArtist = '';
-
-    // JavaScript code for retrieving artworks by various artists and storing them in an array
-    fetch('https://api.artic.edu/api/v1/artworks/search?limit=100&fields=id,title,image_id,artist_title')
-      .then(response => response.json())
-      .then(artworksData => {
-        console.log(artworksData);
-
-        artworks = artworksData.data;
-
-        // Create a list of artist names
-        const artistList = document.getElementById('artistList');
-        const artists = {};
-        artworks.forEach(artwork => {
-          artists[artwork.artist_title] = true;
-        });
-
-        const sortedArtists = Object.keys(artists).sort();
-        sortedArtists.forEach(artistName => {
-          const artistNameElement = document.createElement('div');
-          artistNameElement.textContent = artistName;
-          artistNameElement.classList.add('artistName');
-          artistNameElement.addEventListener('click', () => displayArtworkByArtist(artistName));
-          artistList.appendChild(artistNameElement);
-        });
-      })
-      .catch(error => console.error('Failed to retrieve artworks by various artists:', error));
 
     // Function to display the artwork by the selected artist
     function displayArtworkByArtist(artistName) {
@@ -100,6 +51,4 @@
         rightArrow.style.display = 'none';
       }
     }
-  </script>
-</body>
-</html>
+   

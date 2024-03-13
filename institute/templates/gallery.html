@@ -1,39 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artwork Display</title>
-    <style>
-        /* Add your CSS styles for the artwork display here */
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Institute of Chicago Artists and Artwork</title>
 </head>
 <body>
-    <h1>Artwork Display</h1>
-    <div id="artwork-container">
-        <!-- Artwork will be displayed here -->
-    </div>
+  <h1>Art Institute of Chicago Artists</h1>
 
-    <script>
-        // Use the fetch API to make a request to the Chicago Art Institute API
-        fetch('https://api.artic.edu/api/v1/artworks')
-            .then(response => response.json())
-            .then(data => {
-                // Process the artwork data and display it on the page
-                const artworkContainer = document.getElementById('artwork-container');
-                data.data.forEach(artwork => {
-                    const artworkDiv = document.createElement('div');
-                    artworkDiv.innerHTML = `
-                        <h2>${artwork.title}</h2>
-                        <img src="${artwork.image_url}" alt="${artwork.title}">
-                        <p>${artwork.artist_title}</p>
-                    `;
-                    artworkContainer.appendChild(artworkDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching artwork data:', error);
-            });
-    </script>
+  <ul id="artistList">
+    <!-- Artist names will be dynamically populated here -->
+  </ul>
+
+  <div id="artworkDisplay">
+    <!-- Artwork images will be displayed here -->
+  </div>
+
+  <script>
+    // Function to fetch artist's artworks and display them
+    function displayArtwork(artistId) {
+      fetch(`https://api.artic.edu/api/v1/artists/${artistId}/artworks`)
+        .then(response => response.json())
+        .then(artworkData => {
+          console.log(artworkData);
+
+          // Clear previous artwork display
+          document.getElementById('artworkDisplay').innerHTML = '';
+
+          // Display the artworks
+          artworkData.data.forEach(artwork => {
+            const baseIIIFUrl = "https://www.artic.edu/iiif/2";
+            const imageId = artwork.image_id;
+            const iiifUrl = `${baseIIIFUrl}/${imageId}/full/843,/0/default.jpg`;
+
+            const img = document.createElement('img');
+            img.src = iiifUrl;
+            document.getElementById('artworkDisplay').appendChild(img);
+          });
+        })
+        .catch(error => console.error('Failed to retrieve artist\'s artworks:', error));
+    }
+
+    // Function to populate the artist list
+    function populateArtistList() {
+      fetch('https://api.artic.edu/api/v1/artists')
+        .then(response => response.json())
+        .then(artistData => {
+          console.log(artistData);
+
+          // Populate the artist list
+          const artistList = document.getElementById('artistList');
+          artistData.data.forEach(artist => {
+            const artistItem = document.createElement('li');
+            artistItem.textContent = artist.title;
+            artistList.appendChild(artistItem);
+          });
+
+          // Event delegation to handle click events on artist names
+          artistList.addEventListener('click', (event) => {
+            if (event.target.tagName === 'LI') {
+              displayArtwork(artistData.data[event.target.dataset.index].id);
+            }
+          });
+        })
+        .catch(error => console.error('Failed to retrieve artists:', error));
+    }
+
+    // Call the function to populate the artist list
+    populateArtistList();
+  </script>
 </body>
 </html>
