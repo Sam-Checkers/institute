@@ -56,34 +56,30 @@
     <div id="sidebar">
         <h2>Artists</h2>
         <ul id="artistList">
-            <!-- Artist names will be dynamically added here -->
         </ul>
     </div>
 
     <div class="artwork-container" id="artworkContainer" style="display: none;">
         <h2>Artwork</h2>
         <div class="artwork" id="artwork">
-            <!-- Artwork will be displayed here -->
         </div>
     </div>
 
     <script>
-        // Function to fetch and display artwork for a specific artist
         function displayArtwork(artistId) {
             fetch(`https://api.artic.edu/api/v1/artworks?artist_id=${artistId}`)
                 .then(response => response.json())
                 .then(data => {
                     const artworkContainer = document.getElementById('artwork');
-                    artworkContainer.innerHTML = ''; // Clear previous artwork
+                    artworkContainer.innerHTML = '';
 
-                    // Display the artwork for the artist
+                    
                     data.data.forEach(artwork => {
                         const image = document.createElement('img');
                         image.src = artwork.image_id;
                         artworkContainer.appendChild(image);
                     });
 
-                    // Show the artwork container
                     const artworkContainerDiv = document.getElementById('artworkContainer');
                     artworkContainerDiv.style.display = 'flex';
                 })
@@ -92,14 +88,11 @@
                 });
         }
 
-        // Make a GET request to the API endpoint to fetch artist names
         fetch('https://api.artic.edu/api/v1/artists')
             .then(response => response.json())
             .then(data => {
-                // Extract artist names from the API response
                 const artists = data.data;
 
-                // Display the artist names on the web page
                 const artistList = document.getElementById('artistList');
                 artists.forEach(artist => {
                     const listItem = document.createElement('li');
@@ -114,7 +107,6 @@
                 console.error('Error fetching artist names:', error);
             });
 
-        // Add event listener for scroll wheel to navigate through artwork
         const artworkContainer = document.getElementById('artwork');
         artworkContainer.addEventListener('wheel', event => {
             artworkContainer.scrollLeft += event.deltaY;
