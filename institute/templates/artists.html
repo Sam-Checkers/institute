@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artists and Artwork</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        #sidebar {
+            margin-right: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin-bottom: 5px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .artwork-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .artwork {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .artwork img {
+            max-width: 100%;
+            height: auto;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h2>Artists</h2>
+        <ul id="artistList">
+            <!-- Artist names will be dynamically added here -->
+        </ul>
+    </div>
+
+    <div class="artwork-container" id="artworkContainer" style="display: none;">
+        <h2>Artwork</h2>
+        <div class="artwork" id="artwork">
+            <!-- Artwork will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch and display artwork for a specific artist
+        function displayArtwork(artistId) {
+            fetch(`https://api.artic.edu/api/v1/artworks?artist_id=${artistId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const artworkContainer = document.getElementById('artwork');
+                    artworkContainer.innerHTML = ''; // Clear previous artwork
+
+                    // Display the artwork for the artist
+                    data.data.forEach(artwork => {
+                        const image = document.createElement('img');
+                        image.src = artwork.image_id;
+                        artworkContainer.appendChild(image);
+                    });
+
+                    // Show the artwork container
+                    const artworkContainerDiv = document.getElementById('artworkContainer');
+                    artworkContainerDiv.style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Error fetching artwork:', error);
+                });
+        }
+
+        // Make a GET request to the API endpoint to fetch artist names
+        fetch('https://api.artic.edu/api/v1/artists')
+            .then(response => response.json())
+            .then(data => {
+                // Extract artist names from the API response
+                const artists = data.data;
+
+                // Display the artist names on the web page
+                const artistList = document.getElementById('artistList');
+                artists.forEach(artist => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = artist.title;
+                    listItem.addEventListener('click', () => {
+                        displayArtwork(artist.id);
+                    });
+                    artistList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching artist names:', error);
+            });
+
+        // Add event listener for scroll wheel to navigate through artwork
+        const artworkContainer = document.getElementById('artwork');
+        artworkContainer.addEventListener('wheel', event => {
+            artworkContainer.scrollLeft += event.deltaY;
+        });
+    </script>
+</body>
+</html>

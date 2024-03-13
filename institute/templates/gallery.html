@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artwork Display</title>
+    <style>
+        /* Add your CSS styles for the artwork display here */
+    </style>
+</head>
+<body>
+    <h1>Artwork Display</h1>
+    <div id="artwork-container">
+        <!-- Artwork will be displayed here -->
+    </div>
+
+    <script>
+        // Use the fetch API to make a request to the Chicago Art Institute API
+        fetch('https://api.artic.edu/api/v1/artworks')
+            .then(response => response.json())
+            .then(data => {
+                // Process the artwork data and display it on the page
+                const artworkContainer = document.getElementById('artwork-container');
+                data.data.forEach(artwork => {
+                    const artworkDiv = document.createElement('div');
+                    artworkDiv.innerHTML = `
+                        <h2>${artwork.title}</h2>
+                        <img src="${artwork.image_url}" alt="${artwork.title}">
+                        <p>${artwork.artist_title}</p>
+                    `;
+                    artworkContainer.appendChild(artworkDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching artwork data:', error);
+            });
+    </script>
+</body>
+</html>

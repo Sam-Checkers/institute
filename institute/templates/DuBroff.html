@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artwork by Don A. DuBroff</title>
+  <style>
+    /* Add your CSS styles here */
+  </style>
+</head>
+<body>
+  <h1>Artwork by Don A. DuBroff</h1>
+  <div id="artworkList"></div>
+
+  <script>
+    const apiKey = 'your_api_key';
+    const artistName = 'Don A. DuBroff';
+
+    fetch(`https://api.artic.edu/api/v1/artworks/search?q=artist_name:${artistName}&limit=100`, {
+      headers: {
+        'apikey': apiKey
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to retrieve artwork data. Status code: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(artworkData => {
+        // Process the artwork data and display it on the page
+        const artworkList = document.getElementById('artworkList');
+        artworkData.data.forEach(artwork => {
+          const artworkTitle = document.createElement('p');
+          artworkTitle.textContent = artwork.title;
+          artworkList.appendChild(artworkTitle);
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  </script>
+</body>
+</html>

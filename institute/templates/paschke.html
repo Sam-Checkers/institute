@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artwork by Ed Paschke</title>
+  <style>
+    /* Add your CSS styles here */
+    .artwork {
+      margin-bottom: 20px;
+    }
+    .artwork img {
+      max-width: 200px;
+      max-height: 200px;
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Artwork by Ed Paschke</h1>
+  <div id="artworkList"></div>
+
+  <script>
+    const apiKey = 'your_api_key';
+    const artistName = 'Ed Paschke';
+
+    fetch(`https://api.artic.edu/api/v1/artworks/search?q=artist_name:${artistName}&limit=100`, {
+      headers: {
+        'apikey': apiKey
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to retrieve artwork data. Status code: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(artworkData => {
+        // Process the artwork data and display it on the page
+        const artworkList = document.getElementById('artworkList');
+        artworkData.data.forEach(artwork => {
+          const artworkDiv = document.createElement('div');
+          artworkDiv.classList.add('artwork');
+
+          const artworkTitle = document.createElement('p');
+          artworkTitle.textContent = artwork.title;
+
+          const artworkImage = document.createElement('img');
+          if (artwork.images && artwork.images.length > 0) {
+            artworkImage.src = artwork.images[0].image_id ? `https://www.artic.edu/iiif/2/${artwork.images[0].image_id}/full/!400,400/0/default.jpg` : 'placeholder_image_url.jpg';
+          } else {
+            artworkImage.src = 'placeholder_image_url.jpg';
+          }
+          artworkImage.alt = artwork.title;
+
+          artworkDiv.appendChild(artworkTitle);
+          artworkDiv.appendChild(artworkImage);
+          artworkList.appendChild(artworkDiv);
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  </script>
+</body>
+</html>
