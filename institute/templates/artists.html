@@ -5,20 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Artworks by Artists</title>
   <link rel="stylesheet" href="../static/artists.css">
-  <script src="../static/artists.js" defer></script>
 </head>
 <body>
   <div id="sidebar">
     <h2>Artists</h2>
     <div id="artistLinks">
-      <!-- Artist links will be displayed here -->
     </div>
+    <button id="exitButton">Exit</button>
   </div>
   <div id="artworksContainer">
-    <!-- Artworks will be displayed here -->
   </div>
   <button class="navButton left" id="prevButton">&lt;</button>
   <button class="navButton right" id="nextButton">&gt;</button>
 
+  <div id="artworkModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="artworkTitle"></h2>
+      <p id="artworkDescription"></p>
+    </div>
+  </div>
+
+  <script src="../static/artists.js" defer></script>
 </body>
 </html>

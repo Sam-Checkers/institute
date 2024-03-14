@@ -5,49 +5,63 @@ function displayArtworks(artistName, artistQuery) {
     nextButton.removeEventListener('click', scrollRightHandler);
     const artworksContainer = document.getElementById('artworksContainer');
     artworksContainer.innerHTML = '';
-    fetch(`https://api.artic.edu/api/v1/artworks/search?q=${artistQuery}&limit=20&fields=id,title,image_id,artist_title`)
+    fetch(`https://api.artic.edu/api/v1/artworks/search?q=${artistQuery}&limit=20&fields=id,title,image_id,artist_title,description`)
       .then(response => response.json())
       .then(data => {
         const artworks = data.data;
         const baseIiifUrl = 'https://www.artic.edu/iiif/2';
         artworks
-          .filter(artwork => artwork.artist_title !== 'Leigh Ledare') // Exclude artworks by Leigh Ledare
+          .filter(artwork => artwork.artist_title !== 'Leigh Ledare')
           .forEach(artwork => {
             const imageId = artwork.image_id;
             const iiifUrl = `${baseIiifUrl}/${imageId}/full/843,/0/default.jpg`;
   
-            // Create a container for the artwork item
             const artworkItem = document.createElement('div');
             artworkItem.classList.add('artworkItem');
   
-            // Create a container for the title and image
             const titleImageContainer = document.createElement('div');
             titleImageContainer.classList.add('titleImageContainer');
   
-            // Create and append the title element
             const titleElement = document.createElement('h3');
             titleElement.textContent = artwork.title;
+            titleElement.classList.add('artworkTitle');
             titleImageContainer.appendChild(titleElement);
   
-            // Create and append the image element if it can be loaded
             const imgElement = document.createElement('img');
             imgElement.classList.add('artworkImage');
             imgElement.onload = function() {
-              // Handle image load
               titleImageContainer.appendChild(imgElement);
             };
             imgElement.onerror = function() {
               console.error('Error loading image for artwork:', artwork.title);
-              // Skip over both the title and the image if the image cannot be obtained
               artworksContainer.removeChild(artworkItem);
             };
             imgElement.src = iiifUrl;
   
-            // Append the title and image container to the artwork item
             artworkItem.appendChild(titleImageContainer);
   
-            // Append the artwork item to the artworks container
             artworksContainer.appendChild(artworkItem);
+  
+            titleElement.addEventListener('click', function() {
+              const artworkDescription = artwork.description ? stripHtmlTags(artwork.description) : "Description not available";
+              document.getElementById('artworkTitle').textContent = artwork.title;
+              document.getElementById('artworkDescription').textContent = artworkDescription;
+              const modal = document.getElementById('artworkModal');
+              modal.style.display = "block";
+              document.getElementsByClassName('close')[0].addEventListener('click', function() {
+                modal.style.display = "none";
+              });
+            });
+  
+            titleElement.addEventListener('mouseover', function() {
+              titleElement.style.cursor = "pointer";
+              titleElement.style.textDecoration = "underline";
+            });
+  
+            titleElement.addEventListener('mouseout', function() {
+              titleElement.style.cursor = "default";
+              titleElement.style.textDecoration = "none";
+            });
           });
         artworksContainer.scrollLeft = 0;
         prevButton.addEventListener('click', scrollLeftHandler);
@@ -68,10 +82,20 @@ function displayArtworks(artistName, artistQuery) {
     artworksContainer.scrollBy(window.innerWidth, 0);
   }
   
+  document.getElementById('exitButton').addEventListener('click', function() {
+    document.getElementById('artworksContainer').innerHTML = '';
+  
+  });
+  
+  function stripHtmlTags(html) {
+    let doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+  }
+  
   fetch('https://api.artic.edu/api/v1/artists')
     .then(response => response.json())
     .then(data => {
-      const artists = data.data.filter(artist => artist.title !== 'Leigh Ledare'); // Exclude Leigh Ledare from the list of artists
+      const artists = data.data.filter(artist => artist.title !== 'Leigh Ledare');
       const artistLinks = document.getElementById('artistLinks');
       artists.forEach(artist => {
         const artistLink = document.createElement('a');

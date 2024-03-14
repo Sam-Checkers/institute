@@ -4,7 +4,11 @@ body {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background-image: url(../static/background.jpg);
+  background-repeat: no-repeat;
+  background-size: 100%;
 }
+
 #sidebar {
   width: 200px;
   background-color: #f4f4f4;
@@ -12,30 +16,52 @@ body {
   box-sizing: border-box;
   overflow-y: auto;
 }
+
 #artistLinks {
   display: flex;
   flex-direction: column;
 }
+
 .artistLink {
   margin: 10px 0;
   cursor: pointer;
 }
+
 #artworksContainer {
   display: flex;
   overflow: hidden;
-  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
+
 .artworkItem {
-  flex: 0 0 100vw; /* Each artwork occupies the full width of the viewport */
+  flex: 0 0 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.artworkImage {
-  max-width: 80%; /* Set the maximum width of the image */
-  max-height: 80vh; /* Set the maximum height of the image */
-  object-fit: contain; /* Maintain aspect ratio while fitting within the container */
+
+.titleImageContainer {
+  position: relative;
+  text-align: center;
 }
+
+.titleImageContainer h3 {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  padding: 5px 10px;
+  z-index: 1;
+}
+
+.artworkImage {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  z-index: 0;
+}
+
 .navButton {
   position: absolute;
   top: 50%;
@@ -46,9 +72,54 @@ body {
   cursor: pointer;
   z-index: 1;
 }
+
 .navButton.left {
   left: 200px;
 }
+
 .navButton.right {
   right: 10px;
+}
+
+.titleContainer {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  padding: 5px 10px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
