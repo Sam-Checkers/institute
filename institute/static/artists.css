@@ -47,7 +47,7 @@ body {
   z-index: 1;
 }
 .navButton.left {
-  left: 10px;
+  left: 200px;
 }
 .navButton.right {
   right: 10px;
