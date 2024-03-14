@@ -1,16 +1,54 @@
-/* Add any custom CSS styles here */
-.artist {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 20px;
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
-.artist h2 {
-    margin-bottom: 10px;
+#sidebar {
+  width: 200px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
-.artist .artwork-list {
-    list-style: none;
-    padding: 0;
+#artistLinks {
+  display: flex;
+  flex-direction: column;
 }
-.artist .artwork-list li {
-    margin-bottom: 5px;
+.artistLink {
+  margin: 10px 0;
+  cursor: pointer;
+}
+#artworksContainer {
+  display: flex;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
+}
+.artworkItem {
+  flex: 0 0 100vw; /* Each artwork occupies the full width of the viewport */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.artworkImage {
+  max-width: 80%; /* Set the maximum width of the image */
+  max-height: 80vh; /* Set the maximum height of the image */
+  object-fit: contain; /* Maintain aspect ratio while fitting within the container */
+}
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.5);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1;
+}
+.navButton.left {
+  left: 10px;
+}
+.navButton.right {
+  right: 10px;
 }

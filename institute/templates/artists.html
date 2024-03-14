@@ -1,116 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artists and Artwork</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: flex-start;
-            padding: 20px;
-        }
-
-        #sidebar {
-            margin-right: 20px;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        li {
-            background-color: #f2f2f2;
-            padding: 10px;
-            margin-bottom: 5px;
-            text-align: center;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .artwork-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .artwork {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            padding: 10px;
-        }
-
-        .artwork img {
-            max-width: 100%;
-            height: auto;
-            margin-right: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artworks by Artists</title>
+  <link rel="stylesheet" href="../static/artists.css">
 </head>
 <body>
-    <div id="sidebar">
-        <h2>Artists</h2>
-        <ul id="artistList">
-        </ul>
+  <div id="sidebar">
+    <h2>Artists</h2>
+    <div id="artistLinks">
+      <!-- Artist links will be displayed here -->
     </div>
+  </div>
+  <div id="artworksContainer">
+    <!-- Artworks will be displayed here -->
+  </div>
+  <button class="navButton left" id="prevButton">&lt;</button>
+  <button class="navButton right" id="nextButton">&gt;</button>
 
-    <div class="artwork-container" id="artworkContainer" style="display: none;">
-        <h2>Artwork</h2>
-        <div class="artwork" id="artwork">
-        </div>
-    </div>
+  <script>
+    function displayArtworks(artistName, artistQuery) {
+      const prevButton = document.getElementById('prevButton');
+      const nextButton = document.getElementById('nextButton');
+      prevButton.removeEventListener('click', scrollLeftHandler);
+      nextButton.removeEventListener('click', scrollRightHandler);
 
-    <script>
-        function displayArtwork(artistId) {
-            fetch(`https://api.artic.edu/api/v1/artworks?artist_id=${artistId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const artworkContainer = document.getElementById('artwork');
-                    artworkContainer.innerHTML = '';
+      const artworksContainer = document.getElementById('artworksContainer');
+      artworksContainer.innerHTML = '';
 
-                    
-                    data.data.forEach(artwork => {
-                        const image = document.createElement('img');
-                        image.src = artwork.image_id;
-                        artworkContainer.appendChild(image);
-                    });
+      fetch(`https://api.artic.edu/api/v1/artworks/search?q=${artistQuery}&limit=20&fields=id,title,image_id`)
+        .then(response => response.json())
+        .then(data => {
+          const artworks = data.data;
+          const baseIiifUrl = 'https://www.artic.edu/iiif/2';
 
-                    const artworkContainerDiv = document.getElementById('artworkContainer');
-                    artworkContainerDiv.style.display = 'flex';
-                })
-                .catch(error => {
-                    console.error('Error fetching artwork:', error);
-                });
-        }
+          artworks.forEach(artwork => {
+            const imageId = artwork.image_id;
+            const iiifUrl = `${baseIiifUrl}/${imageId}/full/843,/0/default.jpg`;
 
-        fetch('https://api.artic.edu/api/v1/artists')
-            .then(response => response.json())
-            .then(data => {
-                const artists = data.data;
+            // Attempt to load the image
+            const imgElement = document.createElement('img');
+            imgElement.classList.add('artworkImage');
+            imgElement.onload = function() {
+              // If the image loads successfully, create the artwork item
+              const artworkItem = document.createElement('div');
+              artworkItem.classList.add('artworkItem');
 
-                const artistList = document.getElementById('artistList');
-                artists.forEach(artist => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = artist.title;
-                    listItem.addEventListener('click', () => {
-                        displayArtwork(artist.id);
-                    });
-                    artistList.appendChild(listItem);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching artist names:', error);
-            });
+              // Create a heading element for the artwork title
+              const titleElement = document.createElement('h3');
+              titleElement.textContent = artwork.title;
 
-        const artworkContainer = document.getElementById('artwork');
-        artworkContainer.addEventListener('wheel', event => {
-            artworkContainer.scrollLeft += event.deltaY;
+              // Append the image and title to the artwork item
+              artworkItem.appendChild(imgElement);
+              artworkItem.appendChild(titleElement);
+
+              // Append the artwork item to the artworks container
+              artworksContainer.appendChild(artworkItem);
+            };
+            imgElement.onerror = function() {
+              // If the image fails to load, do nothing (skip over this artwork)
+            };
+            imgElement.src = iiifUrl;
+          });
+
+          artworksContainer.scrollLeft = 0;
+
+          prevButton.addEventListener('click', scrollLeftHandler);
+          nextButton.addEventListener('click', scrollRightHandler);
+        })
+        .catch(error => {
+          console.error('Error retrieving artwork data:', error);
         });
-    </script>
+    }
+
+    function scrollLeftHandler() {
+      const artworksContainer = document.getElementById('artworksContainer');
+      artworksContainer.scrollBy(-window.innerWidth, 0);
+    }
+
+    function scrollRightHandler() {
+      const artworksContainer = document.getElementById('artworksContainer');
+      artworksContainer.scrollBy(window.innerWidth, 0);
+    }
+
+    fetch('https://api.artic.edu/api/v1/artists')
+      .then(response => response.json())
+      .then(data => {
+        const artists = data.data;
+        const artistLinks = document.getElementById('artistLinks');
+        artists.forEach(artist => {
+          const artistLink = document.createElement('a');
+          artistLink.href = '#';
+          artistLink.classList.add('artistLink');
+          artistLink.textContent = artist.title;
+          artistLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            displayArtworks(artist.title, artist.title);
+          });
+          artistLinks.appendChild(artistLink);
+        });
+      })
+      .catch(error => {
+        console.error('Error retrieving artist data:', error);
+      });
+  </script>
 </body>
 </html>
